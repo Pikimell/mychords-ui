@@ -1,0 +1,43 @@
+import { createSlice } from '@reduxjs/toolkit';
+const initialState = {
+  items: [],
+};
+
+export const sliceCollections = createSlice({
+  name: 'Collections',
+  initialState,
+  reducers: {
+    create(state, { payload: userData }) {
+      state.items.push(userData);
+    },
+    remove(state, { payload: collectionId }) {
+      state.items = state.items.filter(el => {
+        return el._id != collectionId;
+      });
+    },
+    addToCollection(state, { payload: { collectionId, chordsId } }) {
+      const collection = state.items.find(el => el._id == collectionId);
+      if (collection) {
+        collection.items.push(chordsId);
+      }
+    },
+    removeFromCollection(state, { payload: { collectionId, chordsId } }) {
+      const collection = state.items.find(el => el._id == collectionId);
+      if (collection) {
+        collection.items = collection.items.filter(
+          item => item._id !== chordsId,
+        );
+      }
+    },
+    update(state, { payload: newCollection }) {
+      const index = state.items.findIndex(el => el._id === newCollection._id);
+      if (index >= 0) {
+        state.items[index] = newCollection;
+      }
+    },
+  },
+});
+
+export const { create, remove, update, addToCollection, removeFromCollection } =
+  sliceCollections.actions;
+export default sliceCollections.reducer;

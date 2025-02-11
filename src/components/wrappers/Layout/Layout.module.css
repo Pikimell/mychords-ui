@@ -1,0 +1,17 @@
+.container {
+  width: var(--breakpoint-sm);
+  min-height: 100vh;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .container {
+    width: var(--breakpoint-md);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    width: var(--breakpoint-xl);
+  }
+}

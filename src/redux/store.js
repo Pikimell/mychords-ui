@@ -1,8 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
-import templateReducer from './template/templateSlice';
+import chordsReducer from './chords/slice';
+import collectionsReducer from './collections/slice';
+import metaReducer from './meta/slice';
 
 export const store = configureStore({
   reducer: {
-    template: templateReducer,
+    chords: chordsReducer,
+    collections: collectionsReducer,
+    meta: metaReducer,
   },
 });
