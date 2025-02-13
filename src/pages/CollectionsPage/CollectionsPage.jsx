@@ -37,7 +37,7 @@ const CollectionsPage = () => {
   return (
     <div className={style['page']}>
       <Flex className={style['header']}>
-        <Search value={search} onChange={handleChange} />
+        <Search value={search} onChange={handleChange} placeholder="Шукати" />
         <Button onClick={handleCreate}>
           <AiOutlinePlusCircle size="20px" />
         </Button>

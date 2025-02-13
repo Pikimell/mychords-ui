@@ -18,7 +18,13 @@ export const sliceChords = createSlice({
         return el._id != id;
       });
     },
-    updateItem(state, { payload: userData }) {},
+    updateItem(state, { payload: chord }) {
+      const index = state.items.findIndex(el => el._id === chord._id);
+
+      if (index >= 0) {
+        state.items[index] = chord;
+      }
+    },
   },
 });
 

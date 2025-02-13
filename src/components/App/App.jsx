@@ -12,6 +12,7 @@ const App = () => {
         <Route path="/collections/:id" element={<pages.CollectionItems />} />
         <Route path="/create" element={<pages.Create />} />
         <Route path="/search" element={<pages.Search />} />
+        <Route path="/parse" element={<pages.Parse />} />
         <Route path="*" element={<pages.Home />} />
       </Routes>
     </Layout>

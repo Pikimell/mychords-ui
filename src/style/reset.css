@@ -151,3 +151,7 @@ input:focus {
   outline: 1px var(--primary-color) solid;
   border: none;
 }
+
+.ant-modal-content {
+  background-color: var(--primary-dark) !important;
+}

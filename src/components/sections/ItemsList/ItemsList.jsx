@@ -6,7 +6,7 @@ import { selectChords } from '../../../redux/chords/selectors';
 import Item from './Item/Item';
 import { getChords } from '../../../api/chords';
 import { setItems } from '../../../redux/chords/slice';
-import { Input } from 'antd';
+import { Empty, Input } from 'antd';
 
 const ItemsList = () => {
   const dispatch = useDispatch();
@@ -18,6 +18,7 @@ const ItemsList = () => {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
+    dispatch(setItems([]));
     const collectionId = id !== 'all' ? id : undefined;
     getChords({ page, collectionId, perPage: 999999 }).then(data => {
       const { items, ...pagination } = data;
@@ -37,6 +38,14 @@ const ItemsList = () => {
     });
   }, [items, search]);
 
+  if (!items.length) {
+    return (
+      <div className={style.section}>
+        <Empty style={{ transform: 'scale(1.5)', marginTop: '100px' }} />
+      </div>
+    );
+  }
+
   return (
     <div className={style.section}>
       <Input
@@ -44,6 +53,7 @@ const ItemsList = () => {
         className={style.searchInput}
         value={search}
         onChange={e => setSearch(e.target.value)}
+        placeholder="Шукати"
       />
       <ul className={style.list}>
         {filteredItems.map(item => {

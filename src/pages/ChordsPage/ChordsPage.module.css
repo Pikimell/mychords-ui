@@ -51,3 +51,28 @@
   align-items: center;
   height: 100vh;
 }
+
+.controls {
+  padding: var(--spacing-4);
+  max-width: 800px;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow);
+  margin: 50px auto 10px auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.controls button {
+  min-width: 150px;
+  width: 25%;
+}
+
+.modal {
+  border-radius: 15px;
+  overflow: hidden;
+}
+.modal > div {
+  background-color: var(--primary-dark) !important;
+}

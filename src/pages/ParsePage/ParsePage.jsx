@@ -1,30 +1,18 @@
 import { Flex, Input, InputNumber } from 'antd';
-import style from './CreatePage.module.css';
-import { useEffect, useState } from 'react';
-import Button from '../../components/custom/Button/Button';
-import { createChord, getChord, updateChord } from '../../api/chords';
+import { createChord } from '../../api/chords';
 import { getUserId } from '../../utils/initTelegram';
-import { getHTML } from '../../api/lyrics';
-import { parseHtmlChords } from '../../utils/htmlParser';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import style from './ParsePage.module.css';
+import { useState } from 'react';
+import Button from '../../components/custom/Button/Button';
 
-const CreatePage = () => {
-  const [params] = useSearchParams();
+const ParsePage = () => {
   const userId = getUserId();
-  const itemId = params.get('id');
-
-  const navigate = useNavigate();
+  const [htmlContent, setHtmlContent] = useState('');
   const [formData, setFormData] = useState({
     userId,
     title: '',
     content: '',
   });
-
-  useEffect(() => {
-    if (itemId) {
-      getChord(itemId).then(setFormData);
-    }
-  }, [itemId]);
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -39,52 +27,60 @@ const CreatePage = () => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    if (itemId) {
-      updateChord(itemId, formData).then(() => {
-        navigate(`/chords/${itemId}`);
-      });
-    } else {
-      createChord(formData);
-    }
-
+    createChord(formData);
     clearForm();
   };
-
   const clearForm = () => {
     setFormData({
       userId,
       title: '',
       content: '',
     });
+    setHtmlContent('');
+  };
+  const parseChords = () => {
+    const dom = document.createElement('html');
+    dom.innerHTML = htmlContent;
+    const title = dom
+      .querySelector('.b-title.b-title--song')
+      .textContent.trim();
+
+    const author = [...dom.querySelectorAll('.b-breadcrumbs a')]
+      .reverse()[0]
+      .textContent.trim();
+    const content = dom.querySelector('.w-words__text').innerHTML.trim();
+
+    setFormData({ userId, title, author, content });
+  };
+  const parseAmdm = () => {
+    const dom = document.createElement('html');
+    dom.innerHTML = htmlContent;
+    const title = dom.querySelector('h1').textContent.split(',')[0].trim();
+    const author = [...dom.querySelectorAll('.nav-list > li > a')]
+      .reverse()[0]
+      .textContent.trim();
+    const chords = dom.querySelector('pre').innerHTML.trim();
+    const content = chords
+      .replace(/<\/?div[^>]*>/g, '')
+      .replaceAll(']:', ']:\n');
+
+    setFormData({ userId, title, author, content });
   };
 
-  const handleLoad = async () => {
-    if (!formData.link?.length) return;
-    const html = await getHTML(formData.link);
-    const content = parseHtmlChords(formData.link, html);
-
-    setFormData({ ...formData, content });
-  };
-
-  const handleParse = () => {
-    navigate('/parse');
-  };
   return (
     <Flex vertical className={style.page}>
-      {!itemId && (
-        <Flex className={style.createPageContainer} vertical>
-          <Input
-            type="text"
-            name="link"
-            placeholder="Link"
-            value={formData.link}
-            onChange={handleChange}
-            className={style.input}
-          />
-          <Button onClick={handleLoad}>Завантажити</Button>
-          <Button onClick={handleParse}>Парсити з сайту</Button>
-        </Flex>
-      )}
+      <Flex className={style.createPageContainer} vertical>
+        <textarea
+          type="text"
+          name="link"
+          placeholder="HTML PAGE"
+          value={htmlContent}
+          onChange={e => setHtmlContent(e.target.value)}
+          className={style.input}
+        />
+        <Button onClick={parseChords}>Парсити Mychords</Button>
+        <Button onClick={parseAmdm}>Парсити AmDm</Button>
+      </Flex>
       <div className={style.createPageContainer}>
         <h2 className={style.heading}>Create a New Chord</h2>
         <form className={style.form} onSubmit={handleSubmit}>
@@ -147,7 +143,7 @@ const CreatePage = () => {
             className={style.input}
           />
           <button type="submit" className={style.button}>
-            {itemId ? 'Оновити' : 'Створити'}
+            Create
           </button>
         </form>
       </div>
@@ -155,4 +151,4 @@ const CreatePage = () => {
   );
 };
 
-export default CreatePage;
+export default ParsePage;

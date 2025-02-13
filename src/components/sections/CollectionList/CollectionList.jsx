@@ -12,6 +12,7 @@ const CollectionList = () => {
 
   const filteredItems = useMemo(() => {
     return items.filter(el => {
+      if (!search?.length) return true;
       return el.title.toLowerCase().includes(search);
     });
   }, [items, search]);

@@ -7,4 +7,5 @@ export default {
   Create: lazy(() => import('./CreatePage/CreatePage')),
   Home: lazy(() => import('./HomePage/HomePage')),
   Search: lazy(() => import('./SearchPage/SearchPage')),
+  Parse: lazy(() => import('./ParsePage/ParsePage')),
 };
