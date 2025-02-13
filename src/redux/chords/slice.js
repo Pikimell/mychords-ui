@@ -1,19 +1,27 @@
 import { createSlice } from '@reduxjs/toolkit';
-const initialState = {};
+const initialState = {
+  items: [],
+};
 
 export const sliceChords = createSlice({
   name: 'Chords',
   initialState,
   reducers: {
-    reducer1(state, { payload: userData }) {},
-    reducer2(state, { payload: userData }) {},
-    reducer3(state, { payload: userData }) {},
-    reducer4: {
-      reducer(state, { payload: userData }) {},
-      prepare(userData) {},
+    setItems(state, { payload: userData }) {
+      state.items = userData;
     },
+    addItem(state, { payload: userData }) {
+      state.items.push(userData);
+    },
+    removeItem(state, { payload: id }) {
+      state.items = state.items.filter(el => {
+        return el._id != id;
+      });
+    },
+    updateItem(state, { payload: userData }) {},
   },
 });
 
-export const { reducer1, reducer2, reducer3 } = sliceChords.actions;
+export const { setItems, addItem, removeItem, updateItem } =
+  sliceChords.actions;
 export default sliceChords.reducer;

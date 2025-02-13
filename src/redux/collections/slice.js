@@ -7,6 +7,9 @@ export const sliceCollections = createSlice({
   name: 'Collections',
   initialState,
   reducers: {
+    setCollections(state, { payload: userData }) {
+      state.items = userData;
+    },
     create(state, { payload: userData }) {
       state.items.push(userData);
     },
@@ -38,6 +41,12 @@ export const sliceCollections = createSlice({
   },
 });
 
-export const { create, remove, update, addToCollection, removeFromCollection } =
-  sliceCollections.actions;
+export const {
+  setCollections,
+  create,
+  remove,
+  update,
+  addToCollection,
+  removeFromCollection,
+} = sliceCollections.actions;
 export default sliceCollections.reducer;

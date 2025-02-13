@@ -1,0 +1,49 @@
+.itemContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-2);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--light-color);
+  box-shadow: var(--box-shadow-sm);
+  margin-bottom: var(--spacing-2);
+  max-width: 600px;
+  width: 100%;
+}
+
+.itemText {
+  font-size: var(--font-size-base);
+  color: var(--dark-color);
+  font-weight: var(--font-weight-normal);
+  width: 100%;
+  overflow-x: scroll;
+}
+
+.button {
+  padding: var(--spacing-2);
+  border: none;
+  border-radius: var(--border-radius);
+  background: var(--primary-color);
+  color: var(--white);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.button:hover {
+  background: var(--secondary-color);
+}
+
+.buttonDelete {
+  padding: var(--spacing-2);
+  border: none;
+  border-radius: var(--border-radius);
+  background: var(--danger-color);
+  color: var(--white);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.buttonDelete:hover {
+  background: darkred;
+}

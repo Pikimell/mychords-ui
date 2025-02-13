@@ -1,0 +1,10 @@
+.collection-item {
+  border-radius: 10px;
+  min-width: 200px;
+  border-color: rgba(41, 95, 255, 0.303);
+  background-color: rgba(66, 132, 230, 0.081);
+}
+
+.collection-item * {
+  color: var(--primary-light);
+}

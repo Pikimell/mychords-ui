@@ -1,0 +1,20 @@
+.section {
+  margin: auto;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+}
+
+.searchInput {
+  max-width: 600px;
+  margin: auto;
+}

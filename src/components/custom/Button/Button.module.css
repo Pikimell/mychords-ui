@@ -9,6 +9,7 @@
   background-color: var(--primary-color);
   color: var(--primary-light);
   border: 1px solid var(--primary-color);
+  cursor: pointer;
 }
 
 .primary {
