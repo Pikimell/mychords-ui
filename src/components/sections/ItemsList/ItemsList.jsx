@@ -23,7 +23,13 @@ const ItemsList = () => {
     getChords({ page, collectionId, perPage: 999999 }).then(data => {
       const { items, ...pagination } = data;
       setPagination({ ...pagination });
-      dispatch(setItems(items));
+      dispatch(
+        setItems(
+          items.toSorted((a, b) => {
+            return a.title.localeCompare(b.title);
+          }),
+        ),
+      );
     });
   }, [dispatch, page, id]);
 
