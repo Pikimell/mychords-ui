@@ -4,8 +4,10 @@ import style from './EditItems.module.css';
 import { useEffect, useMemo, useState } from 'react';
 import { getChords, updateChord } from '../../../api/chords';
 import { getUserId } from '../../../utils/initTelegram';
+import { Input } from 'antd';
 
 const EditItems = ({ collectionId }) => {
+  const [search, setSearch] = useState('');
   const [items, setItems] = useState([]);
   const userId = getUserId();
   useEffect(() => {
@@ -16,10 +18,14 @@ const EditItems = ({ collectionId }) => {
   }, [userId]);
 
   const filtered = useMemo(() => {
-    return items.filter(el => {
-      return !el?.collections?.includes(collectionId);
-    });
-  }, [items, collectionId]);
+    return items
+      .filter(el => {
+        return el.title.toLowerCase().includes(search.toLowerCase());
+      })
+      .filter(el => {
+        return !el?.collections?.includes(collectionId);
+      });
+  }, [items, collectionId, search]);
 
   const handleAdd = id => {
     const arr = [...items];
@@ -28,10 +34,21 @@ const EditItems = ({ collectionId }) => {
     arr[index].collections.push(collectionId);
     updateChord(id, arr[index]);
     setItems(arr);
+    if (filtered.length === 1) {
+      setSearch('');
+    }
   };
 
   return (
     <div className={style['edit-collection']}>
+      <Input
+        type="text"
+        className={style.searchInput}
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        placeholder="Шукати"
+      />
+
       {filtered.map(el => {
         return (
           <div key={el._id} className={style['item']}>
