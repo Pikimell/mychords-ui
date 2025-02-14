@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectChords } from '../../../redux/chords/selectors';
 import Item from './Item/Item';
-import { getChords } from '../../../api/chords';
+import { getChords, removeChord } from '../../../api/chords';
 import { setItems } from '../../../redux/chords/slice';
 import { Empty, Input } from 'antd';
 

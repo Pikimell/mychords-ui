@@ -2,30 +2,33 @@ import { Flex, Modal } from 'antd';
 import style from './Item.module.css';
 
 import { isAdminStatus } from '../../../../utils/initTelegram';
-import { useNavigate } from 'react-router-dom';
-import { removeChord } from '../../../../api/chords';
+import { NavLink, useParams } from 'react-router-dom';
+import { removeChord, updateChord } from '../../../../api/chords';
 import { useDispatch } from 'react-redux';
 import { removeItem } from '../../../../redux/chords/slice';
 const { confirm } = Modal;
 
 const Item = ({ data }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const { id } = useParams();
   const isAdmin = isAdminStatus();
-  const { number, title } = data;
+  const { number, title, collections = [] } = data;
   const numStr = number ? `${number} -` : '';
-
-  const handleRedirect = () => {
-    navigate(`/chords/${data._id}`);
-  };
 
   const handleRemove = () => {
     confirm({
       title: 'Видалити?',
       onOk() {
-        removeChord(data._id).then(() => {
-          dispatch(removeItem(data._id));
-        });
+        if (id === 'all') {
+          removeChord(data._id).then(() => {
+            dispatch(removeItem(data._id));
+          });
+        } else {
+          const arr = collections.filter(el => el != id);
+          updateChord(data._id, { collections: arr }).then(() => {
+            dispatch(removeItem(data._id));
+          });
+        }
       },
     });
   };
@@ -37,9 +40,9 @@ const Item = ({ data }) => {
         {title}
       </p>
       <Flex gap="5px">
-        <button className={style.button} onClick={handleRedirect}>
+        <NavLink className={style.button} to={`/chords/${data._id}`}>
           Відкрити
-        </button>
+        </NavLink>
         {isAdmin && (
           <button className={style.buttonDelete} onClick={handleRemove}>
             Видалити
