@@ -1,15 +1,18 @@
 import style from './ChordsPage.module.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
-import { getChord } from '../../api/chords';
+import { getChord, removeChord } from '../../api/chords';
 import { Empty, Flex, Modal } from 'antd';
 import { getUserId } from '../../utils/initTelegram';
 import Button from '../../components/custom/Button/Button';
 import ItemSelector from '../../components/custom/ItemSelector/ItemSelector';
 import EditCollection from '../../components/sections/EditCollection/EditCollection';
 import { useModal } from '../../hooks/useModal';
+import { useDispatch } from 'react-redux';
+import { removeItem } from '../../redux/chords/slice';
 
 const ChordsPage = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
   const [chord, setChord] = useState();
@@ -35,6 +38,11 @@ const ChordsPage = () => {
   };
   const handleEditClick = () => {
     navigate(`/create?id=${id}`);
+  };
+  const handleDelete = () => {
+    removeChord(id).then(() => {
+      dispatch(removeItem(id));
+    });
   };
 
   if (!chord?._id) {
@@ -90,7 +98,7 @@ const ChordsPage = () => {
           <Button onClick={() => setChordsState(!chordsStatus)}>
             {chordsStatus ? 'Показати' : 'Приховати'} аккорди
           </Button>
-          <Button>Видалити</Button>
+          <Button onClick={handleDelete}>Видалити</Button>
         </div>
       )}
 

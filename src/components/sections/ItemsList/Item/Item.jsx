@@ -12,9 +12,8 @@ const Item = ({ data }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isAdmin = isAdminStatus();
-  const { number, title, author } = data;
+  const { number, title } = data;
   const numStr = number ? `${number} -` : '';
-  const authorStr = author ? `${author} - ` : '';
 
   const handleRedirect = () => {
     navigate(`/chords/${data._id}`);
@@ -35,7 +34,6 @@ const Item = ({ data }) => {
     <div className={style.itemContainer}>
       <p className={style.itemText}>
         {numStr}
-        {authorStr}
         {title}
       </p>
       <Flex gap="5px">

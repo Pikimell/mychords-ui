@@ -24,14 +24,14 @@
   padding: var(--spacing-2);
   border: none;
   border-radius: var(--border-radius);
-  background: var(--primary-color);
+  background: var(--dark-color);
   color: var(--white);
   cursor: pointer;
   transition: var(--transition-base);
 }
 
 .button:hover {
-  background: var(--secondary-color);
+  filter: contrast(0.7);
 }
 
 .buttonDelete {
