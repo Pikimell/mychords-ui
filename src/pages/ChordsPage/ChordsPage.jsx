@@ -8,14 +8,16 @@ import Button from '../../components/custom/Button/Button';
 import ItemSelector from '../../components/custom/ItemSelector/ItemSelector';
 import EditCollection from '../../components/sections/EditCollection/EditCollection';
 import { useModal } from '../../hooks/useModal';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { removeItem } from '../../redux/chords/slice';
 import { updateHtmlChords } from '../../utils/notes';
 import toast from 'react-hot-toast';
+import { selectChords } from '../../redux/chords/selectors';
 
 const ChordsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const items = useSelector(selectChords);
   const { id } = useParams();
   const [chord, setChord] = useState();
   const [tune, setTune] = useState(0);
@@ -23,19 +25,35 @@ const ChordsPage = () => {
   const isOwner = chord?.userId == getUserId();
   const [chordsStatus, setChordsState] = useState(false);
   const { modalState, openModal, closeModal } = useModal();
+
+  const handlePrevSong = useCallback(() => {
+    let index = items.findIndex(el => el._id === id);
+    index += index < 1 ? items.length : 0;
+    index--;
+    navigate(`/chords/${items[index]._id}`);
+  }, [items, id, navigate]);
+
+  const handleNextSong = useCallback(() => {
+    let index = items.findIndex(el => el._id === id);
+    index++;
+    navigate(`/chords/${items[index % items.length]._id}`);
+  }, [items, id, navigate]);
+
   const onKeyDown = useCallback(
     e => {
-      console.log(e.code);
-
       if (e.code === 'BracketLeft') {
         setTune(tune - 1);
       } else if (e.code === 'BracketRight') {
         setTune(tune + 1);
       } else if (e.code === 'KeyP') {
         setTune(0);
+      } else if (e.code === 'Comma') {
+        handlePrevSong();
+      } else if (e.code === 'Period') {
+        handleNextSong();
       }
     },
-    [tune],
+    [tune, handleNextSong, handlePrevSong],
   );
 
   useEffect(() => {
@@ -84,8 +102,14 @@ const ChordsPage = () => {
 
   return (
     <div className={style.page}>
-      <Flex justify="center">
+      <Flex justify="center" align="center">
+        <Button className={style['tune']} onClick={handlePrevSong}>
+          {'<'}
+        </Button>
         <ItemSelector setValue={handleSelectItem} />
+        <Button className={style['tune']} onClick={handleNextSong}>
+          {'>'}
+        </Button>
       </Flex>
 
       <div className={style.chordsContainer}>
