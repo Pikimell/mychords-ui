@@ -3,6 +3,7 @@ import Footer from '../../sections/Footer/Footer';
 import Header from '../../sections/Header/Header';
 import style from './Layout.module.css';
 import { usePreload } from '../../../hooks/usePreload';
+import { Toaster } from 'react-hot-toast';
 
 const Layout = ({ children }) => {
   usePreload();
@@ -15,6 +16,7 @@ const Layout = ({ children }) => {
         </Suspense>
       </div>
       <Footer />
+      <Toaster />
     </>
   );
 };

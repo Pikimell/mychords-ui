@@ -64,9 +64,13 @@
   justify-content: center;
 }
 
-.controls button {
-  min-width: 150px;
+.controls .btn {
+  min-width: 200px;
   width: 25%;
+}
+
+.controls .tune {
+  width: 40px;
 }
 
 .modal {

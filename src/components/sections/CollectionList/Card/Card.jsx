@@ -35,7 +35,7 @@ const Card = ({ item = { title: 'Усі пісні', _id: 'all' } }) => {
           >
             Відкрити
           </Button>
-          {!isMainCollection && (
+          {isAdminStatus() && !isMainCollection && (
             <Button
               style={{ width: '100%' }}
               onClick={openModal}
