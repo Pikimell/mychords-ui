@@ -7,6 +7,7 @@ import { getUserId } from '../../utils/initTelegram';
 import { getHTML } from '../../api/lyrics';
 import { parseHtmlChords } from '../../utils/htmlParser';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const CreatePage = () => {
   const [params] = useSearchParams();
@@ -19,6 +20,13 @@ const CreatePage = () => {
     title: '',
     content: '',
   });
+
+  useEffect(() => {
+    if (userId === 'anonym') {
+      navigate('/');
+      toast.error('You are not authorized!');
+    }
+  }, [userId, navigate]);
 
   useEffect(() => {
     if (itemId) {

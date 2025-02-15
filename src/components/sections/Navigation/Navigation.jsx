@@ -3,7 +3,7 @@ import style from './Navigation.module.css';
 
 const items = [
   { title: 'Головна', link: '/' },
-  { title: 'Пошук', link: '/search' },
+  // { title: 'Пошук', link: '/search' },
   { title: 'Колекції', link: '/collections' },
   { title: 'Створити', link: '/create' },
 ];
