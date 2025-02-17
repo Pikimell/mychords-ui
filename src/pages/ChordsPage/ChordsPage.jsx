@@ -13,6 +13,7 @@ import { removeItem } from '../../redux/chords/slice';
 import { updateHtmlChords } from '../../utils/notes';
 import toast from 'react-hot-toast';
 import { selectChords } from '../../redux/chords/selectors';
+import { setTitle } from '../../redux/meta/slice';
 
 const ChordsPage = () => {
   const dispatch = useDispatch();
@@ -25,6 +26,10 @@ const ChordsPage = () => {
   const isOwner = chord?.userId == getUserId();
   const [chordsStatus, setChordsState] = useState(false);
   const { modalState, openModal, closeModal } = useModal();
+
+  // useEffect(() => {
+  //   if (chord) dispatch(setTitle(chord.title));
+  // }, [chord, dispatch]);
 
   const handlePrevSong = useCallback(() => {
     let index = items.findIndex(el => el._id === id);

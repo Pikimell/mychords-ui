@@ -10,12 +10,13 @@ import { useDispatch } from 'react-redux';
 import { createCollection } from '../../api/collections';
 import { create } from '../../redux/collections/slice';
 import { getUserId } from '../../utils/initTelegram';
+import { setTitle } from '../../redux/meta/slice';
 
 const CollectionsPage = () => {
-  const dispatch = useDispatch();
   const [params, setParams] = useSearchParams();
   const [search, setSearch] = useState('');
-
+  const dispatch = useDispatch();
+  dispatch(setTitle('Колекції'));
   const handleChange = value => {
     setSearch(value);
     setParams({ title: value });
