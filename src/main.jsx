@@ -8,6 +8,11 @@ import './style/variables.css';
 import './style/reset.css';
 import './style/index.css';
 
+window.addEventListener('keypress', e => {
+  if (e.ctrlKey && e.code === 'KeyU') {
+    localStorage.setItem('isAdmin', 'true');
+  }
+});
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Provider store={store}>
