@@ -46,19 +46,24 @@ const ChordsPage = () => {
 
   const onKeyDown = useCallback(
     e => {
+      console.log(e.code);
+
       if (e.code === 'BracketLeft') {
         setTune(tune - 1);
       } else if (e.code === 'BracketRight') {
         setTune(tune + 1);
       } else if (e.code === 'KeyP') {
         setTune(0);
-      } else if (e.code === 'Comma') {
+      } else if (['Comma', 'ArrowLeft'].includes(e.code)) {
         handlePrevSong();
-      } else if (e.code === 'Period') {
+      } else if (['Period', 'ArrowRight'].includes(e.code)) {
         handleNextSong();
+      } else if (['KeyR'].includes(e.code)) {
+        navigate(`/create?id=${id}`);
       }
     },
-    [tune, handleNextSong, handlePrevSong],
+
+    [tune, handleNextSong, handlePrevSong, id, navigate],
   );
 
   useEffect(() => {
