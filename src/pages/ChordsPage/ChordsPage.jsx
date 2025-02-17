@@ -1,8 +1,8 @@
 import style from './ChordsPage.module.css';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getChord, removeChord } from '../../api/chords';
-import { Empty, Flex, Modal } from 'antd';
+import { Empty, Flex, Modal, Slider } from 'antd';
 import { getUserId } from '../../utils/initTelegram';
 import Button from '../../components/custom/Button/Button';
 import ItemSelector from '../../components/custom/ItemSelector/ItemSelector';
@@ -13,10 +13,8 @@ import { removeItem } from '../../redux/chords/slice';
 import { updateHtmlChords } from '../../utils/notes';
 import toast from 'react-hot-toast';
 import { selectChords } from '../../redux/chords/selectors';
-import { setTitle } from '../../redux/meta/slice';
 
 const ChordsPage = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const items = useSelector(selectChords);
   const { id } = useParams();
@@ -27,27 +25,49 @@ const ChordsPage = () => {
   const [chordsStatus, setChordsState] = useState(false);
   const { modalState, openModal, closeModal } = useModal();
 
-  // useEffect(() => {
-  //   if (chord) dispatch(setTitle(chord.title));
-  // }, [chord, dispatch]);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const [scrollSpeed, setScrollSpeed] = useState(1);
+  const scrollInterval = useRef(null);
+
+  useEffect(() => {
+    getChord(id).then(setChord);
+    setTune(0);
+    setScrollSpeed(1);
+    setIsScrolling(false);
+    clearInterval(scrollInterval.current);
+  }, [id]);
 
   const handlePrevSong = useCallback(() => {
     let index = items.findIndex(el => el._id === id);
-    index += index < 1 ? items.length : 0;
-    index--;
+    index = index < 1 ? items.length - 1 : index - 1;
     navigate(`/chords/${items[index]._id}`);
   }, [items, id, navigate]);
 
   const handleNextSong = useCallback(() => {
     let index = items.findIndex(el => el._id === id);
-    index++;
-    navigate(`/chords/${items[index % items.length]._id}`);
+    navigate(`/chords/${items[(index + 1) % items.length]._id}`);
   }, [items, id, navigate]);
+
+  const startScrolling = () => {
+    if (!isScrolling) {
+      setIsScrolling(true);
+    }
+  };
+
+  const stopScrolling = () => {
+    setIsScrolling(false);
+    if (scrollInterval.current) {
+      clearInterval(scrollInterval.current);
+      scrollInterval.current = null;
+    }
+  };
+
+  const toggleScrolling = () => {
+    isScrolling ? stopScrolling() : startScrolling();
+  };
 
   const onKeyDown = useCallback(
     e => {
-      console.log(e.code);
-
       if (e.code === 'BracketLeft') {
         setTune(tune - 1);
       } else if (e.code === 'BracketRight') {
@@ -58,25 +78,19 @@ const ChordsPage = () => {
         handlePrevSong();
       } else if (['Period', 'ArrowRight'].includes(e.code)) {
         handleNextSong();
-      } else if (['KeyR'].includes(e.code)) {
+      } else if (e.code === 'KeyE') {
         navigate(`/create?id=${id}`);
       }
     },
-
     [tune, handleNextSong, handlePrevSong, id, navigate],
   );
-
-  useEffect(() => {
-    getChord(id).then(setChord);
-    setTune(0);
-  }, [id]);
 
   useEffect(() => {
     window.addEventListener('keydown', onKeyDown);
     return () => {
       window.removeEventListener('keydown', onKeyDown);
     };
-  });
+  }, [onKeyDown]);
 
   const content = useMemo(() => {
     if (!chordsStatus) {
@@ -86,21 +100,14 @@ const ChordsPage = () => {
     }
   }, [chord?.content, chordsStatus, tune]);
 
-  const handleSelectItem = value => {
-    navigate(`/chords/${value}`);
-  };
-  const handleEditClick = () => {
-    navigate(`/create?id=${id}`);
-  };
-  const handleDelete = () => {
-    removeChord(id).then(() => {
-      dispatch(removeItem(id));
-    });
-  };
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.toString());
-    toast.success('Скопійовано');
-  };
+  useEffect(() => {
+    if (isScrolling) {
+      clearInterval(scrollInterval.current);
+      scrollInterval.current = setInterval(() => {
+        window.scrollBy({ top: 1, behavior: 'smooth' });
+      }, Math.round(1000 / scrollSpeed));
+    }
+  }, [scrollSpeed, isScrolling, scrollInterval]);
 
   if (!chord?._id) {
     return (
@@ -116,10 +123,24 @@ const ChordsPage = () => {
         <Button className={style['tune']} onClick={handlePrevSong}>
           {'<'}
         </Button>
-        <ItemSelector setValue={handleSelectItem} />
+        <ItemSelector setValue={value => navigate(`/chords/${value}`)} />
         <Button className={style['tune']} onClick={handleNextSong}>
           {'>'}
         </Button>
+      </Flex>
+
+      <Flex justify="center" vertical align="center">
+        <Button className={style['btn']} onClick={toggleScrolling}>
+          {isScrolling ? 'Зупинити' : 'Скрол'}
+        </Button>
+        <Slider
+          style={{ width: '80%', maxWidth: '600px' }}
+          min={0.8}
+          max={30}
+          step={0.1}
+          value={scrollSpeed}
+          onChange={v => setScrollSpeed(v)}
+        />
       </Flex>
 
       <div className={style.chordsContainer}>
@@ -131,27 +152,6 @@ const ChordsPage = () => {
         ></pre>
 
         <hr />
-        <div className={style['info']}>
-          {chord.author && (
-            <p className={style.author}>Автор: {chord.author}</p>
-          )}
-          {chord.link && (
-            <p className={style.author}>
-              Посилання: <a href={chord.link}>{isAmDm ? 'AmDm' : 'MyChords'}</a>
-            </p>
-          )}
-
-          {chord.number && (
-            <p className={style.author}>Номер: {chord.number}</p>
-          )}
-          {chord.ton !== undefined && (
-            <p className={style.author}>Тональность: {chord.ton}</p>
-          )}
-
-          {chord.description && (
-            <p className={style.author}>{chord.description}</p>
-          )}
-        </div>
       </div>
 
       <div className={style['controls']}>
@@ -159,13 +159,20 @@ const ChordsPage = () => {
           <Button className={style['tune']} onClick={() => setTune(tune - 1)}>
             -1
           </Button>
-          <p onClick={() => setTune(0)}>тон({tune})</p>
+          <p onClick={() => setTune(0)}>Тон ({tune})</p>
           <Button className={style['tune']} onClick={() => setTune(tune + 1)}>
             +1
           </Button>
         </Flex>
+        <Button className={style['btn']} onClick={toggleScrolling}>
+          {isScrolling ? 'Зупинити' : 'Скрол'}
+        </Button>
+
         {isOwner && (
-          <Button className={style['btn']} onClick={handleEditClick}>
+          <Button
+            className={style['btn']}
+            onClick={() => navigate(`/create?id=${id}`)}
+          >
             Змінити
           </Button>
         )}
@@ -175,19 +182,14 @@ const ChordsPage = () => {
           </Button>
         )}
         {chord.link && (
-          <Button className={style['btn']} onClick={handleCopyLink}>
+          <Button
+            className={style['btn']}
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.toString());
+              toast.success('Скопійовано');
+            }}
+          >
             Посилання
-          </Button>
-        )}
-        <Button
-          className={style['btn']}
-          onClick={() => setChordsState(!chordsStatus)}
-        >
-          {chordsStatus ? 'Показати' : 'Приховати'} аккорди
-        </Button>
-        {isOwner && (
-          <Button className={style['btn']} onClick={handleDelete}>
-            Видалити
           </Button>
         )}
       </div>

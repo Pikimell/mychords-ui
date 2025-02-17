@@ -1,9 +1,17 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+
 .chordsContainer {
   padding: var(--spacing-4);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--box-shadow);
   max-width: 800px;
   margin: auto;
+  width: 100%;
 }
 
 .title {
@@ -64,7 +72,7 @@
   justify-content: center;
 }
 
-.controls .btn {
+.btn {
   min-width: 200px;
   width: 25%;
 }
