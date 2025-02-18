@@ -152,6 +152,27 @@ const ChordsPage = () => {
         ></pre>
 
         <hr />
+        <div className={style['info']}>
+          {chord.author && (
+            <p className={style.author}>Автор: {chord.author}</p>
+          )}
+          {chord.link && (
+            <p className={style.author}>
+              Посилання: <a href={chord.link}>{isAmDm ? 'AmDm' : 'MyChords'}</a>
+            </p>
+          )}
+
+          {chord.number && (
+            <p className={style.author}>Номер: {chord.number}</p>
+          )}
+          {chord.ton !== undefined && (
+            <p className={style.author}>Тональность: {chord.ton}</p>
+          )}
+
+          {chord.description && (
+            <p className={style.author}>{chord.description}</p>
+          )}
+        </div>
       </div>
 
       <div className={style['controls']}>
@@ -167,7 +188,12 @@ const ChordsPage = () => {
         <Button className={style['btn']} onClick={toggleScrolling}>
           {isScrolling ? 'Зупинити' : 'Скрол'}
         </Button>
-
+        <Button
+          className={style['btn']}
+          onClick={() => setChordsState(!chordsStatus)}
+        >
+          {chordsStatus ? 'Показати' : 'Приховати'} аккорди
+        </Button>
         {isOwner && (
           <Button
             className={style['btn']}
