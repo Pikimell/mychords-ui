@@ -15,6 +15,7 @@ import toast from 'react-hot-toast';
 import { selectChords } from '../../redux/chords/selectors';
 
 const ChordsPage = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const items = useSelector(selectChords);
   const { id } = useParams();
@@ -24,7 +25,6 @@ const ChordsPage = () => {
   const isOwner = chord?.userId == getUserId();
   const [chordsStatus, setChordsState] = useState(false);
   const { modalState, openModal, closeModal } = useModal();
-
   const [isScrolling, setIsScrolling] = useState(false);
   const [scrollSpeed, setScrollSpeed] = useState(1);
   const scrollInterval = useRef(null);
@@ -47,6 +47,12 @@ const ChordsPage = () => {
     let index = items.findIndex(el => el._id === id);
     navigate(`/chords/${items[(index + 1) % items.length]._id}`);
   }, [items, id, navigate]);
+
+  const handleDelete = () => {
+    removeChord(id).then(() => {
+      dispatch(removeItem(id));
+    });
+  };
 
   const startScrolling = () => {
     if (!isScrolling) {
@@ -216,6 +222,11 @@ const ChordsPage = () => {
             }}
           >
             Посилання
+          </Button>
+        )}
+        {isOwner && (
+          <Button className={style['btn']} onClick={handleDelete}>
+            Видалити
           </Button>
         )}
       </div>
