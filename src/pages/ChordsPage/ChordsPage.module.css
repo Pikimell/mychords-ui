@@ -44,10 +44,6 @@
   line-height: var(--line-height-base);
 }
 
-.content span {
-  color: tomato;
-}
-
 .info {
   margin-top: var(--spacing-3);
   font-size: var(--font-size-sm);
@@ -87,4 +83,16 @@
 }
 .modal > div {
   background-color: var(--primary-dark) !important;
+}
+
+.content span {
+  color: tomato;
+}
+
+:global(.subline) {
+  display: block;
+  color: var(--primary-light) !important;
+}
+:global(.subline > span) {
+  color: tomato;
 }
