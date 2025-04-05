@@ -11,9 +11,18 @@ const api = axios.create({
 // ================== CHORDS ==================
 
 export const getChords = async params => {
+  // const urlParams = new URLSearchParams(params);
+  // const json = localStorage.getItem(urlParams) || 'null';
+  // const data = JSON.parse(json);
+
+  // if (data) {
+  //   return data;
+  // }
   const response = await api.get('/chords', {
     params,
   });
+  // const copy = { ...response.data, expires: Date.now() };
+  // localStorage.setItem(urlParams, JSON.stringify(copy));
   return response.data;
 };
 
@@ -40,21 +49,29 @@ export const updateChord = async (chordId, chord) => {
 
 export const removeChord = async chordId => {
   const response = await api.delete(`/chords/${chordId}`);
-  localStorage.removeItem(chordId);
+  removeFromLS(chordId);
   return response.data;
 };
 
+function removeFromLS(chordID) {
+  const items = JSON.parse(localStorage.getItem('items') || '{}');
+  delete items[chordID];
+  localStorage.setItem('items', JSON.stringify(items));
+}
+
 function saveToLS(chords) {
+  const items = JSON.parse(localStorage.getItem('items') || '{}');
   const id = chords._id;
   const copy = { ...chords, expires: Date.now() };
-  localStorage.setItem(id, JSON.stringify(copy));
+  items[id] = copy;
+  localStorage.setItem('items', JSON.stringify(items));
 }
 
 function getFromLS(chordId) {
   try {
-    const json = localStorage.getItem(chordId);
+    const json = localStorage.getItem('items') || '{}';
     const data = JSON.parse(json);
-    const { expires, ...chords } = data;
+    const { expires, ...chords } = data[chordId];
     const diff = Date.now() - expires;
     if (diff > 7 * 24 * 60 * 60 * 1000) {
       throw new Error('Data Expires');
