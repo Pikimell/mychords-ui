@@ -1,4 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
+import storage from 'redux-persist/lib/storage';
+import { persistReducer } from 'redux-persist';
+
 const initialState = {
   items: [],
 };
@@ -49,4 +52,10 @@ export const {
   addToCollection,
   removeFromCollection,
 } = sliceCollections.actions;
-export default sliceCollections.reducer;
+
+const persistConfig = {
+  key: 'collections',
+  storage: storage,
+};
+
+export default persistReducer(persistConfig, sliceCollections.reducer);

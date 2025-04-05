@@ -1,4 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
+import storage from 'redux-persist/lib/storage';
+import { persistReducer } from 'redux-persist';
+
 const initialState = {
   items: [],
 };
@@ -30,4 +33,10 @@ export const sliceChords = createSlice({
 
 export const { setItems, addItem, removeItem, updateItem } =
   sliceChords.actions;
-export default sliceChords.reducer;
+
+const persistConfig = {
+  key: 'chords',
+  storage: storage,
+};
+
+export default persistReducer(persistConfig, sliceChords.reducer);
