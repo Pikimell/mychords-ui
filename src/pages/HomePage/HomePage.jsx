@@ -13,7 +13,7 @@ const HomePage = () => {
   return (
     <div className={style['page']}>
       <Navigation showMainPage={false} />
-      <button onClick={handleAdminClick}>ADMIN</button>
+      {/* <button onClick={handleAdminClick}>ADMIN</button> */}
     </div>
   );
 };
