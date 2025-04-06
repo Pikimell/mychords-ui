@@ -13,8 +13,10 @@ import { getUserId } from '../../utils/initTelegram';
 import { setTitle } from '../../redux/meta/slice';
 
 const CollectionsPage = () => {
+  const userId = getUserId();
   const [params, setParams] = useSearchParams();
   const [search, setSearch] = useState('');
+  const isAnonym = userId === 'anonym';
   const dispatch = useDispatch();
   dispatch(setTitle('Колекції'));
   const handleChange = value => {
@@ -39,9 +41,11 @@ const CollectionsPage = () => {
     <div className={style['page']}>
       <Flex className={style['header']}>
         <Search value={search} onChange={handleChange} placeholder="Шукати" />
-        <Button onClick={handleCreate}>
-          <AiOutlinePlusCircle size="20px" />
-        </Button>
+        {!isAnonym && (
+          <Button onClick={handleCreate}>
+            <AiOutlinePlusCircle size="20px" />
+          </Button>
+        )}
       </Flex>
 
       <CollectionList />

@@ -219,11 +219,11 @@ const ChordsPage = () => {
             Змінити
           </Button>
         )}
-        {isOwner && (
-          <Button className={style['btn']} onClick={openModal}>
-            Колекції
-          </Button>
-        )}
+
+        <Button className={style['btn']} onClick={openModal}>
+          Колекції
+        </Button>
+
         {chord.link && (
           <Button
             className={style['btn']}
@@ -232,7 +232,7 @@ const ChordsPage = () => {
               toast.success('Скопійовано');
             }}
           >
-            Посилання
+            Поділитись Посиланням
           </Button>
         )}
         {isOwner && (

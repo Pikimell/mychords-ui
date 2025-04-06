@@ -42,6 +42,7 @@ export const getChord = async chordId => {
 export const createChord = async chord => {
   const response = await api.post('/chords', chord);
   saveToLS(response.data);
+  clearLocalStorage();
   return response.data;
 };
 
@@ -54,6 +55,7 @@ export const updateChord = async (chordId, chord) => {
 export const removeChord = async chordId => {
   const response = await api.delete(`/chords/${chordId}`);
   removeFromLS(chordId);
+  clearLocalStorage();
   return response.data;
 };
 
@@ -83,5 +85,14 @@ function getFromLS(chordId) {
     return chords;
   } catch {
     return null;
+  }
+}
+
+function clearLocalStorage() {
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.includes('page')) {
+      localStorage.removeItem(key);
+    }
   }
 }

@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import style from './Card.module.css';
 import Button from '../../../custom/Button/Button';
 import { Flex, Modal } from 'antd';
-import { isAdminStatus } from '../../../../utils/initTelegram';
+import { getUserId, isAdminStatus } from '../../../../utils/initTelegram';
 import { Card as CardItem } from 'antd';
 import { removeCollection } from '../../../../api/collections';
 import { useDispatch } from 'react-redux';
@@ -11,7 +11,9 @@ import { useModal } from '../../../../hooks/useModal';
 import EditItems from '../../EditItems/EditItems';
 
 const Card = ({ item = { title: 'Усі пісні', _id: 'all' } }) => {
+  const userId = getUserId();
   const isMainCollection = item._id === 'all';
+  const isOwner = userId === item.userId;
   const { modalState, openModal, closeModal } = useModal();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -36,7 +38,7 @@ const Card = ({ item = { title: 'Усі пісні', _id: 'all' } }) => {
           >
             Відкрити
           </Button>
-          {isAdminStatus() && !isMainCollection && (
+          {(isAdminStatus() || isOwner) && !isMainCollection && (
             <Button
               style={{ width: '100%' }}
               onClick={openModal}
@@ -47,7 +49,7 @@ const Card = ({ item = { title: 'Усі пісні', _id: 'all' } }) => {
           )}
         </Flex>
 
-        {isAdminStatus() && !isMainCollection && (
+        {(isAdminStatus() || isOwner) && !isMainCollection && (
           <Button onClick={handleDelete} type="primary">
             Видалити
           </Button>

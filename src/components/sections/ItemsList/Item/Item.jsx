@@ -1,7 +1,7 @@
 import { Flex, Modal } from 'antd';
 import style from './Item.module.css';
 
-import { isAdminStatus } from '../../../../utils/initTelegram';
+import { getUserId, isAdminStatus } from '../../../../utils/initTelegram';
 import { NavLink, useLocation, useParams } from 'react-router-dom';
 import { removeChord, updateChord } from '../../../../api/chords';
 import { useDispatch } from 'react-redux';
@@ -9,10 +9,12 @@ import { removeItem } from '../../../../redux/chords/slice';
 const { confirm } = Modal;
 
 const Item = ({ data }) => {
+  const userId = getUserId();
   const dispatch = useDispatch();
   const location = useLocation();
   const { id } = useParams();
   const isAdmin = isAdminStatus();
+  const isOwner = userId === data?.userId;
   const { number, title, collections = [] } = data;
   const numStr = number ? `${number} -` : '';
 
@@ -48,7 +50,7 @@ const Item = ({ data }) => {
         >
           Відкрити
         </NavLink>
-        {isAdmin && (
+        {(isAdmin || isOwner) && (
           <button className={style.buttonDelete} onClick={handleRemove}>
             Видалити
           </button>
