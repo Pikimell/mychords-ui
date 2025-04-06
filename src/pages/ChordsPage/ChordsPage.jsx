@@ -13,10 +13,12 @@ import { removeItem } from '../../redux/chords/slice';
 import { updateHtmlChords } from '../../utils/notes';
 import toast from 'react-hot-toast';
 import { selectChords } from '../../redux/chords/selectors';
+import html2canvas from 'html2canvas';
 
 const ChordsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const contentRef = useRef();
   const items = useSelector(selectChords);
   const { id } = useParams();
   const [chord, setChord] = useState();
@@ -102,7 +104,14 @@ const ChordsPage = () => {
     if (!chordsStatus) {
       return updateHtmlChords(chord?.content, tune);
     } else {
-      return chord?.content.replaceAll(/<span[^>]*>.*?<\/span>/gs, '');
+      let copy = chord?.content.replaceAll(/<span[^>]*>.*?<\/span>/gs, '');
+      while (copy.includes('  ')) {
+        copy = copy.replaceAll('  ', ' ');
+        copy = copy.replaceAll('	 ', ' ');
+        copy = copy.replaceAll('\n\n\n', '\n');
+        copy = copy.replaceAll(/[|!;:[\]]*/gs, '');
+      }
+      return copy;
     }
   }, [chord?.content, chordsStatus, tune]);
 
@@ -135,21 +144,23 @@ const ChordsPage = () => {
         </Button>
       </Flex>
 
-      <Flex justify="center" vertical align="center">
-        <Button className={style['btn']} onClick={toggleScrolling}>
-          {isScrolling ? 'Зупинити' : 'Скрол'}
-        </Button>
-        <Slider
-          style={{ width: '80%', maxWidth: '600px' }}
-          min={0.8}
-          max={30}
-          step={0.1}
-          value={scrollSpeed}
-          onChange={v => setScrollSpeed(v)}
-        />
-      </Flex>
+      {!chordsStatus && (
+        <Flex justify="center" vertical align="center">
+          <Button className={style['btn']} onClick={toggleScrolling}>
+            {isScrolling ? 'Зупинити' : 'Скрол'}
+          </Button>
+          <Slider
+            style={{ width: '80%', maxWidth: '600px' }}
+            min={0.8}
+            max={30}
+            step={0.1}
+            value={scrollSpeed}
+            onChange={v => setScrollSpeed(v)}
+          />
+        </Flex>
+      )}
 
-      <div className={style.chordsContainer}>
+      <div ref={contentRef} className={style.chordsContainer}>
         <h2 className={style.title}>{chord.title}</h2>
 
         <pre
@@ -229,6 +240,28 @@ const ChordsPage = () => {
             Видалити
           </Button>
         )}
+        <Button
+          className={style['btn']}
+          onClick={async () => {
+            if (!contentRef.current) return;
+            const canvas = await html2canvas(contentRef.current);
+            canvas.toBlob(blob => {
+              if (blob) {
+                navigator.clipboard
+                  .write([new ClipboardItem({ 'image/png': blob })])
+                  .then(() => {
+                    toast.success('Скріншот скопійовано до буфера обміну!');
+                  })
+                  .catch(err => {
+                    toast.error('Не вдалося скопіювати скріншот');
+                    console.error(err);
+                  });
+              }
+            });
+          }}
+        >
+          📸 Скріншот
+        </Button>
       </div>
 
       <Modal

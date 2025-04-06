@@ -11,18 +11,22 @@ const api = axios.create({
 // ================== CHORDS ==================
 
 export const getChords = async params => {
-  // const urlParams = new URLSearchParams(params);
-  // const json = localStorage.getItem(urlParams) || 'null';
-  // const data = JSON.parse(json);
+  const urlParams = new URLSearchParams(params);
+  try {
+    const json = localStorage.getItem(urlParams) || 'null';
+    const { expires, ...data } = JSON.parse(json);
+    const diff = Date.now() - expires;
+    if (data && diff < 1 * 24 * 60 * 60 * 1000) {
+      return data;
+    }
+  } catch {}
 
-  // if (data) {
-  //   return data;
-  // }
   const response = await api.get('/chords', {
     params,
   });
-  // const copy = { ...response.data, expires: Date.now() };
-  // localStorage.setItem(urlParams, JSON.stringify(copy));
+
+  const copy = { ...response.data, expires: Date.now() };
+  localStorage.setItem(urlParams, JSON.stringify(copy));
   return response.data;
 };
 

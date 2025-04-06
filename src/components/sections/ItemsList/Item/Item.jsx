@@ -2,7 +2,7 @@ import { Flex, Modal } from 'antd';
 import style from './Item.module.css';
 
 import { isAdminStatus } from '../../../../utils/initTelegram';
-import { NavLink, useParams } from 'react-router-dom';
+import { NavLink, useLocation, useParams } from 'react-router-dom';
 import { removeChord, updateChord } from '../../../../api/chords';
 import { useDispatch } from 'react-redux';
 import { removeItem } from '../../../../redux/chords/slice';
@@ -10,6 +10,7 @@ const { confirm } = Modal;
 
 const Item = ({ data }) => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const { id } = useParams();
   const isAdmin = isAdminStatus();
   const { number, title, collections = [] } = data;
@@ -40,7 +41,11 @@ const Item = ({ data }) => {
         {title}
       </p>
       <Flex gap="5px">
-        <NavLink className={style.button} to={`/chords/${data._id}`}>
+        <NavLink
+          className={style.button}
+          to={`/chords/${data._id}`}
+          state={{ from: location }}
+        >
           Відкрити
         </NavLink>
         {isAdmin && (

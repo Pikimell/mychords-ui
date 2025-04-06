@@ -5,13 +5,20 @@ import { AiOutlineBars } from 'react-icons/ai';
 import { AiOutlineClose } from 'react-icons/ai';
 import { useModal } from '../../../hooks/useModal';
 import Navigation from '../Navigation/Navigation';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const title = useSelector(selectMetaTitle);
   const { modalState, openModal, closeModal } = useModal();
 
+  const handleRedirect = () => {
+    const from = location.state?.from?.pathname;
+    if (from && from.includes('collections')) {
+      navigate(from);
+    }
+  };
   return (
     <>
       <header className={style['header']}>
@@ -21,7 +28,9 @@ const Header = () => {
         <button className={style['menu-btn']} onClick={() => navigate('/')}>
           MyChords
         </button>
-        <p>{title}</p>
+        <p onClick={handleRedirect} style={{ cursor: 'pointer' }}>
+          {title}
+        </p>
         <p></p>
       </header>
       {modalState && (

@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import style from './Card.module.css';
 import Button from '../../../custom/Button/Button';
 import { Flex, Modal } from 'antd';
@@ -15,8 +15,9 @@ const Card = ({ item = { title: 'Усі пісні', _id: 'all' } }) => {
   const { modalState, openModal, closeModal } = useModal();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const handleRedirect = () => {
-    navigate(`/collections/${item._id}`);
+    navigate(`/collections/${item._id}`, { state: { from: location } });
   };
   const handleDelete = () => {
     removeCollection(item._id).then(() => {

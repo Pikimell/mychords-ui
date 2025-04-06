@@ -12,6 +12,7 @@
   max-width: 800px;
   margin: auto;
   width: 100%;
+  background-color: var(--primary-dark);
 }
 
 .title {
@@ -42,6 +43,7 @@
   font-family: monospace;
   font-size: var(--font-size-sm);
   line-height: var(--line-height-base);
+  background-color: var(--primary-dark);
 }
 
 .info {
