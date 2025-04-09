@@ -5,6 +5,8 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setTitle } from '../../redux/meta/slice';
 import { getCollections } from '../../api/collections';
+import { Button } from 'antd';
+import toast from 'react-hot-toast';
 
 const ItemsPage = ({}) => {
   const { id } = useParams();
@@ -20,8 +22,16 @@ const ItemsPage = ({}) => {
     }
   });
   return (
-    <div>
+    <div className={style['container']}>
       <ItemsList />
+      <Button
+        onClick={() => {
+          navigator.clipboard.writeText(window.location.toString());
+          toast.success('Скопійовано');
+        }}
+      >
+        Скопіювати посилання
+      </Button>
     </div>
   );
 };
