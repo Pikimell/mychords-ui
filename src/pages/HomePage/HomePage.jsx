@@ -6,9 +6,9 @@ import style from './HomePage.module.css';
 const HomePage = () => {
   const dispatch = useDispatch();
   dispatch(setTitle('Головне меню'));
-  const handleAdminClick = () => {
-    localStorage.setItem('isAdmin', 'true');
-  };
+  // const handleAdminClick = () => {
+  //   localStorage.setItem('isAdmin', 'true');
+  // };
 
   return (
     <div className={style['page']}>

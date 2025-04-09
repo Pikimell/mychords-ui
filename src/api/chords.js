@@ -16,6 +16,7 @@ export const getChords = async params => {
     const json = localStorage.getItem(urlParams) || 'null';
     const { expires, ...data } = JSON.parse(json);
     const diff = Date.now() - expires;
+
     if (data && diff < 1 * 24 * 60 * 60 * 1000) {
       return data;
     }
@@ -32,7 +33,7 @@ export const getChords = async params => {
 
 export const getChord = async chordId => {
   const data = getFromLS(chordId);
-  if (data) return data;
+  if (data && data?.content?.length > 50) return data;
 
   const response = await api.get(`/chords/${chordId}`);
   saveToLS(response.data);

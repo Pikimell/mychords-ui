@@ -39,6 +39,13 @@ const ChordsPage = () => {
     clearInterval(scrollInterval.current);
   }, [id]);
 
+  useEffect(() => {
+    console.log(chord, chord?.ton);
+    if (chord && chord?.ton) {
+      setTune(+chord.ton);
+    }
+  }, [chord]);
+
   const handlePrevSong = useCallback(() => {
     let index = items.findIndex(el => el._id === id);
     index = index < 1 ? items.length - 1 : index - 1;
@@ -144,21 +151,23 @@ const ChordsPage = () => {
         </Button>
       </Flex>
 
-      {!chordsStatus && (
-        <Flex justify="center" vertical align="center">
-          <Button className={style['btn']} onClick={toggleScrolling}>
-            {isScrolling ? 'Зупинити' : 'Скрол'}
+      <div className={style['controls']}>
+        <Flex align="center">
+          <Button className={style['tune']} onClick={() => setTune(tune - 1)}>
+            -1
           </Button>
-          <Slider
-            style={{ width: '80%', maxWidth: '600px' }}
-            min={0.8}
-            max={30}
-            step={0.1}
-            value={scrollSpeed}
-            onChange={v => setScrollSpeed(v)}
-          />
+          <p onClick={() => setTune(0)}>Тон ({tune})</p>
+          <Button className={style['tune']} onClick={() => setTune(tune + 1)}>
+            +1
+          </Button>
         </Flex>
-      )}
+        <Button
+          className={style['btn']}
+          onClick={() => setChordsState(!chordsStatus)}
+        >
+          {chordsStatus ? 'Показати' : 'Приховати'} аккорди
+        </Button>
+      </div>
 
       <div ref={contentRef} className={style.chordsContainer}>
         <h2 className={style.title}>{chord.title}</h2>
@@ -263,6 +272,22 @@ const ChordsPage = () => {
           📸 Скріншот
         </Button>
       </div>
+
+      {!chordsStatus && (
+        <Flex justify="center" vertical align="center">
+          <Button className={style['btn']} onClick={toggleScrolling}>
+            {isScrolling ? 'Зупинити' : 'Скрол'}
+          </Button>
+          <Slider
+            style={{ width: '80%', maxWidth: '600px' }}
+            min={0.8}
+            max={30}
+            step={0.1}
+            value={scrollSpeed}
+            onChange={v => setScrollSpeed(v)}
+          />
+        </Flex>
+      )}
 
       <Modal
         className={style['modal']}
