@@ -15,10 +15,12 @@ import { selectChords, selectPreviewItem } from '../../redux/chords/selectors';
 import html2canvas from 'html2canvas';
 import { searchItem } from '../../api/mychords';
 import { clearPreviewItem } from '../../redux/chords/slice';
+import { createChord } from '../../api/chords';
 
 const PreviewPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const userId = getUserId();
   const previewItem = useSelector(selectPreviewItem);
   const contentRef = useRef();
   const items = useSelector(selectChords);
@@ -29,7 +31,7 @@ const PreviewPage = () => {
   const [isScrolling, setIsScrolling] = useState(false);
   const [scrollSpeed, setScrollSpeed] = useState(1);
   const scrollInterval = useRef(null);
-  const [cords, setChords] = useState({});
+  const [chords, setChords] = useState({});
 
   useEffect(() => {
     if (previewItem) {
@@ -92,9 +94,9 @@ const PreviewPage = () => {
 
   const content = useMemo(() => {
     if (!chordsStatus) {
-      return updateHtmlChords(cords?.content, tune);
+      return updateHtmlChords(chords?.content, tune);
     } else {
-      let copy = cords?.content.replaceAll(/<span[^>]*>.*?<\/span>/gs, '');
+      let copy = chords?.content.replaceAll(/<span[^>]*>.*?<\/span>/gs, '');
       while (copy.includes('  ')) {
         copy = copy.replaceAll('  ', ' ');
         copy = copy.replaceAll('	 ', ' ');
@@ -103,7 +105,7 @@ const PreviewPage = () => {
       }
       return copy;
     }
-  }, [cords?.content, chordsStatus, tune]);
+  }, [chords?.content, chordsStatus, tune]);
 
   useEffect(() => {
     if (isScrolling) {
@@ -114,7 +116,14 @@ const PreviewPage = () => {
     }
   }, [scrollSpeed, isScrolling, scrollInterval]);
 
-  if (!cords?.content) {
+  const handleSave = () => {
+    const item = { ...chords, userId };
+    createChord(item).then(data => {
+      navigate(`/chords/${data._id}`);
+    });
+  };
+
+  if (!chords?.content) {
     return (
       <div className={style.emptyContainer}>
         <Empty />
@@ -153,7 +162,7 @@ const PreviewPage = () => {
       </div>
 
       <div ref={contentRef} className={style.chordsContainer}>
-        <h2 className={style.title}>{cords.title}</h2>
+        <h2 className={style.title}>{chords.title}</h2>
 
         <pre
           className={style.content}
@@ -162,24 +171,25 @@ const PreviewPage = () => {
 
         <hr />
         <div className={style['info']}>
-          {cords.author && (
-            <p className={style.author}>Автор: {cords.author}</p>
+          {chords.author && (
+            <p className={style.author}>Автор: {chords.author}</p>
           )}
-          {cords.link && (
+          {chords.link && (
             <p className={style.author}>
-              Посилання: <a href={cords.link}>{isAmDm ? 'AmDm' : 'MyChords'}</a>
+              Посилання:{' '}
+              <a href={chords.link}>{isAmDm ? 'AmDm' : 'MyChords'}</a>
             </p>
           )}
 
-          {cords.number && (
-            <p className={style.author}>Номер: {cords.number}</p>
+          {chords.number && (
+            <p className={style.author}>Номер: {chords.number}</p>
           )}
-          {cords.ton !== undefined && (
-            <p className={style.author}>Тональность: {cords.ton}</p>
+          {chords.ton !== undefined && (
+            <p className={style.author}>Тональность: {chords.ton}</p>
           )}
 
-          {cords.description && (
-            <p className={style.author}>{cords.description}</p>
+          {chords.description && (
+            <p className={style.author}>{chords.description}</p>
           )}
         </div>
       </div>
@@ -201,12 +211,12 @@ const PreviewPage = () => {
           {chordsStatus ? 'Показати' : 'Приховати'} аккорди
         </Button>
         {isOwner && (
-          <Button className={style['btn']} onClick={() => {}}>
+          <Button className={style['btn']} onClick={handleSave}>
             Зберегти
           </Button>
         )}
 
-        {cords.link && (
+        {chords.link && (
           <Button
             className={style['btn']}
             onClick={() => {
