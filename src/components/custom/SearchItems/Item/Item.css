@@ -1,0 +1,66 @@
+.song-item {
+  border: 1px solid rgb(76, 74, 73);
+  margin: 5px;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: rgb(49, 49, 49);
+  width: 100%;
+}
+
+.song-item p {
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-item .song-title {
+  text-transform: uppercase;
+  text-decoration: solid;
+  font-weight: bold;
+  font-size: small;
+}
+
+.song-item .song-artist {
+  color: rgba(255, 255, 255, 0.578);
+}
+
+.song-button {
+  border-radius: 5px;
+}
+
+.button-open {
+  padding: var(--spacing-2);
+  border: none;
+  border-radius: var(--border-radius);
+  background: var(--dark-color);
+  color: var(--white);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.button:hover {
+  filter: contrast(0.7);
+}
+
+.button-save {
+  padding: var(--spacing-2);
+  border: none;
+  border-radius: var(--border-radius);
+  background: var(--success-color);
+  color: var(--white);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.buttonDelete:hover {
+  background: darkred;
+}
+
+@media screen and (max-width: 768px) {
+  .song-item p {
+    max-width: 195px;
+  }
+}

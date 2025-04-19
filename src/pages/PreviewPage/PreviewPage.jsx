@@ -1,69 +1,52 @@
-import style from './ChordsPage.module.css';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import style from './PreviewPage.module.css';
+import { useNavigate } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { getChord, removeChord } from '../../api/chords';
-import { Empty, Flex, Modal, Slider } from 'antd';
+
+import { Empty, Flex, Slider } from 'antd';
 import { getUserId } from '../../utils/initTelegram';
 import Button from '../../components/custom/Button/Button';
 import ItemSelector from '../../components/custom/ItemSelector/ItemSelector';
-import EditCollection from '../../components/sections/EditCollection/EditCollection';
-import { useModal } from '../../hooks/useModal';
+
 import { useDispatch, useSelector } from 'react-redux';
-import { removeItem } from '../../redux/chords/slice';
+
 import { updateHtmlChords } from '../../utils/notes';
 import toast from 'react-hot-toast';
 import { selectChords, selectPreviewItem } from '../../redux/chords/selectors';
 import html2canvas from 'html2canvas';
+import { searchItem } from '../../api/mychords';
+import { clearPreviewItem } from '../../redux/chords/slice';
 
-const ChordsPage = () => {
+const PreviewPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const previewItem = useSelector(selectPreviewItem);
   const contentRef = useRef();
   const items = useSelector(selectChords);
-  const { id } = useParams();
-  const [chord, setChord] = useState();
   const [tune, setTune] = useState(0);
-  const isAmDm = chord?.link?.includes('amdm');
-  const isOwner = chord?.userId == getUserId();
+  const isAmDm = previewItem?.link?.includes('amdm');
+  const isOwner = previewItem?.userId == getUserId();
   const [chordsStatus, setChordsState] = useState(false);
-  const { modalState, openModal, closeModal } = useModal();
   const [isScrolling, setIsScrolling] = useState(false);
   const [scrollSpeed, setScrollSpeed] = useState(1);
   const scrollInterval = useRef(null);
+  const [cords, setChords] = useState({});
 
   useEffect(() => {
-    if (id !== 'preview') {
-      getChord(id).then(setChord);
-      setTune(0);
-      setScrollSpeed(1);
-      setIsScrolling(false);
-      clearInterval(scrollInterval.current);
+    if (previewItem) {
+      searchItem(previewItem.link).then(data => {
+        setChords(data);
+        dispatch(clearPreviewItem());
+      });
     }
-  }, [id]);
-
-  useEffect(() => {
-    console.log(chord, chord?.ton);
-    if (chord && chord?.ton) {
-      setTune(+chord.ton);
-    }
-  }, [chord]);
+  }, [previewItem]);
 
   const handlePrevSong = useCallback(() => {
-    let index = items.findIndex(el => el._id === id);
-    index = index < 1 ? items.length - 1 : index - 1;
-    navigate(`/chords/${items[index]._id}`);
-  }, [items, id, navigate]);
+    navigate(`/chords/${items[0]._id}`);
+  }, [items, navigate]);
 
   const handleNextSong = useCallback(() => {
-    let index = items.findIndex(el => el._id === id);
-    navigate(`/chords/${items[(index + 1) % items.length]._id}`);
-  }, [items, id, navigate]);
-
-  const handleDelete = () => {
-    removeChord(id).then(() => {
-      dispatch(removeItem(id));
-    });
-  };
+    navigate(`/chords/${items[0]._id}`);
+  }, [items, navigate]);
 
   const startScrolling = () => {
     if (!isScrolling) {
@@ -95,11 +78,9 @@ const ChordsPage = () => {
         handlePrevSong();
       } else if (['Period', 'ArrowRight'].includes(e.code)) {
         handleNextSong();
-      } else if (e.code === 'KeyE') {
-        navigate(`/create?id=${id}`);
       }
     },
-    [tune, handleNextSong, handlePrevSong, id, navigate],
+    [tune, handleNextSong, handlePrevSong, navigate],
   );
 
   useEffect(() => {
@@ -111,9 +92,9 @@ const ChordsPage = () => {
 
   const content = useMemo(() => {
     if (!chordsStatus) {
-      return updateHtmlChords(chord?.content, tune);
+      return updateHtmlChords(cords?.content, tune);
     } else {
-      let copy = chord?.content.replaceAll(/<span[^>]*>.*?<\/span>/gs, '');
+      let copy = cords?.content.replaceAll(/<span[^>]*>.*?<\/span>/gs, '');
       while (copy.includes('  ')) {
         copy = copy.replaceAll('  ', ' ');
         copy = copy.replaceAll('	 ', ' ');
@@ -122,7 +103,7 @@ const ChordsPage = () => {
       }
       return copy;
     }
-  }, [chord?.content, chordsStatus, tune]);
+  }, [cords?.content, chordsStatus, tune]);
 
   useEffect(() => {
     if (isScrolling) {
@@ -133,7 +114,7 @@ const ChordsPage = () => {
     }
   }, [scrollSpeed, isScrolling, scrollInterval]);
 
-  if (!chord?._id) {
+  if (!cords?.content) {
     return (
       <div className={style.emptyContainer}>
         <Empty />
@@ -172,7 +153,7 @@ const ChordsPage = () => {
       </div>
 
       <div ref={contentRef} className={style.chordsContainer}>
-        <h2 className={style.title}>{chord.title}</h2>
+        <h2 className={style.title}>{cords.title}</h2>
 
         <pre
           className={style.content}
@@ -181,24 +162,24 @@ const ChordsPage = () => {
 
         <hr />
         <div className={style['info']}>
-          {chord.author && (
-            <p className={style.author}>Автор: {chord.author}</p>
+          {cords.author && (
+            <p className={style.author}>Автор: {cords.author}</p>
           )}
-          {chord.link && (
+          {cords.link && (
             <p className={style.author}>
-              Посилання: <a href={chord.link}>{isAmDm ? 'AmDm' : 'MyChords'}</a>
+              Посилання: <a href={cords.link}>{isAmDm ? 'AmDm' : 'MyChords'}</a>
             </p>
           )}
 
-          {chord.number && (
-            <p className={style.author}>Номер: {chord.number}</p>
+          {cords.number && (
+            <p className={style.author}>Номер: {cords.number}</p>
           )}
-          {chord.ton !== undefined && (
-            <p className={style.author}>Тональность: {chord.ton}</p>
+          {cords.ton !== undefined && (
+            <p className={style.author}>Тональность: {cords.ton}</p>
           )}
 
-          {chord.description && (
-            <p className={style.author}>{chord.description}</p>
+          {cords.description && (
+            <p className={style.author}>{cords.description}</p>
           )}
         </div>
       </div>
@@ -213,9 +194,6 @@ const ChordsPage = () => {
             +1
           </Button>
         </Flex>
-        <Button className={style['btn']} onClick={toggleScrolling}>
-          {isScrolling ? 'Зупинити' : 'Скрол'}
-        </Button>
         <Button
           className={style['btn']}
           onClick={() => setChordsState(!chordsStatus)}
@@ -223,19 +201,12 @@ const ChordsPage = () => {
           {chordsStatus ? 'Показати' : 'Приховати'} аккорди
         </Button>
         {isOwner && (
-          <Button
-            className={style['btn']}
-            onClick={() => navigate(`/create?id=${id}`)}
-          >
-            Змінити
+          <Button className={style['btn']} onClick={() => {}}>
+            Зберегти
           </Button>
         )}
 
-        <Button className={style['btn']} onClick={openModal}>
-          Колекції
-        </Button>
-
-        {chord.link && (
+        {cords.link && (
           <Button
             className={style['btn']}
             onClick={() => {
@@ -246,11 +217,7 @@ const ChordsPage = () => {
             Поділитись Посиланням
           </Button>
         )}
-        {isOwner && (
-          <Button className={style['btn']} onClick={handleDelete}>
-            Видалити
-          </Button>
-        )}
+
         <Button
           className={style['btn']}
           onClick={async () => {
@@ -290,18 +257,8 @@ const ChordsPage = () => {
           />
         </Flex>
       )}
-
-      <Modal
-        className={style['modal']}
-        open={modalState}
-        footer={null}
-        onClose={closeModal}
-        onCancel={closeModal}
-      >
-        <EditCollection chordId={id} />
-      </Modal>
     </div>
   );
 };
 
-export default ChordsPage;
+export default PreviewPage;

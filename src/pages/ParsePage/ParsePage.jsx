@@ -38,6 +38,7 @@ const ParsePage = () => {
     });
     setHtmlContent('');
   };
+
   const parseChords = () => {
     const dom = document.createElement('html');
     dom.innerHTML = htmlContent;
@@ -52,6 +53,7 @@ const ParsePage = () => {
 
     setFormData({ userId, title, author, content });
   };
+
   const parseAmdm = () => {
     const dom = document.createElement('html');
     dom.innerHTML = htmlContent;

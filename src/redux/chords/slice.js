@@ -4,6 +4,7 @@ import { persistReducer } from 'redux-persist';
 
 const initialState = {
   items: [],
+  previewItem: null,
 };
 
 export const sliceChords = createSlice({
@@ -28,11 +29,23 @@ export const sliceChords = createSlice({
         state.items[index] = chord;
       }
     },
+    setPreviewItem(state, { payload: chords }) {
+      state.previewItem = chords;
+    },
+    clearPreviewItem(state) {
+      state.previewItem = null;
+    },
   },
 });
 
-export const { setItems, addItem, removeItem, updateItem } =
-  sliceChords.actions;
+export const {
+  setItems,
+  addItem,
+  removeItem,
+  updateItem,
+  setPreviewItem,
+  clearPreviewItem,
+} = sliceChords.actions;
 
 const persistConfig = {
   key: 'chords',

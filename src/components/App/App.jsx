@@ -7,6 +7,7 @@ const App = () => {
     <Layout>
       <Routes>
         <Route path="/" element={<pages.Home />} />
+        <Route path="/chords/preview" element={<pages.Preview />} />
         <Route path="/chords/:id" element={<pages.Chords />} />
         <Route path="/collections" element={<pages.Collections />} />
         <Route path="/collections/:id" element={<pages.CollectionItems />} />
