@@ -216,18 +216,6 @@ const PreviewPage = () => {
           </Button>
         )}
 
-        {chords.link && (
-          <Button
-            className={style['btn']}
-            onClick={() => {
-              navigator.clipboard.writeText(window.location.toString());
-              toast.success('Скопійовано');
-            }}
-          >
-            Поділитись Посиланням
-          </Button>
-        )}
-
         <Button
           className={style['btn']}
           onClick={async () => {
