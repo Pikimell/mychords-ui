@@ -118,9 +118,13 @@ const PreviewPage = () => {
 
   const handleSave = () => {
     const item = { ...chords, userId };
-    createChord(item).then(data => {
-      navigate(`/chords/${data._id}`);
-    });
+    createChord(item)
+      .then(data => {
+        navigate(`/chords/${data._id}`);
+      })
+      .catch(() => {
+        toast.error('Упс! Щось пішло не так');
+      });
   };
 
   if (!chords?.content) {
