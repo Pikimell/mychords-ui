@@ -210,11 +210,10 @@ const PreviewPage = () => {
         >
           {chordsStatus ? 'Показати' : 'Приховати'} аккорди
         </Button>
-        {isOwner && (
-          <Button className={style['btn']} onClick={handleSave}>
-            Зберегти
-          </Button>
-        )}
+
+        <Button className={style['btn']} onClick={handleSave}>
+          Зберегти
+        </Button>
 
         <Button
           className={style['btn']}
