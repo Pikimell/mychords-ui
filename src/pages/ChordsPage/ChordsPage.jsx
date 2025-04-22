@@ -97,9 +97,11 @@ const ChordsPage = () => {
         handleNextSong();
       } else if (e.code === 'KeyE') {
         navigate(`/create?id=${id}`);
+      } else if (e.code === 'KeyK') {
+        openModal();
       }
     },
-    [tune, handleNextSong, handlePrevSong, id, navigate],
+    [tune, handleNextSong, handlePrevSong, id, navigate, openModal],
   );
 
   useEffect(() => {
